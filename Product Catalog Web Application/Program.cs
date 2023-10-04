@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Product_Catalog_Web_Application.Data;
+using Product_Catalog_Web_Application.Seeds;
+using static System.Formats.Asn1.AsnWriter;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +30,14 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+//Seeding Categories
 
+var scopefactory = app.Services.GetRequiredService<IServiceScopeFactory>();
+using var scope = scopefactory.CreateScope();
+var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+await DefaultCategory.SeedCategory(dbContext);
+//
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

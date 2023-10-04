@@ -6,6 +6,7 @@
     <title>@ViewData["Title"] - Product_Catalog_Web_Application</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link href="~/lib/datatables/css/datatables.bootstrap4.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/Product_Catalog_Web_Application.styles.css" asp-append-version="true" />
 </head>
 <body>
@@ -43,8 +44,8 @@
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/datatables/js/jquery.datatables.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

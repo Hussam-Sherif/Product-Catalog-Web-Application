@@ -1,8 +1,71 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Welcome To Myproduct";
 }
-
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@model IEnumerable<Product>
+ 
+<div class="row align-items-center me-0" style="padding-top:120px;margin-bottom:50px;padding-bottom:90px;background: currentColor;">
+    <div class="col-md-6 text-center text-md-end mb-4 mb-md-0">
+        <h1 class="display-4 text-white" style="font-weight: 400;">Welcome To Product Catalog</h1>
+    </div>
+@*    <div class="col-md-6 text-center text-md-start">
+        <img src="/Images/MyproductLogo.png" />
+    </div>*@
 </div>
+<div class="container" style="margin-top:0px;margin-bottom:110px;">
+
+    <div class="card mt-4 shadow">
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var product in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="card">
+                                    <div class="row">
+                                        <div class="card-body col-md-8 ms-2">
+                                            <h5 class="card-title me-5 mb-1">
+                                                <a asp-controller="Product" asp-action="Details" asp-route-id="@product.ID">
+                                                    <p class="fw-bold text-primary mb-0">
+                                                        @product.Name
+                                                    </p>
+                                                </a>
+                                            </h5>
+                                            <span class="badge rounded-pill bg-primary mb-3">By: @product.Name</span>
+                                            <span class="badge rounded-pill bg-success mb-3">@product.Price</span>
+                                            @foreach (var item in product.Categories)
+                                            {
+                                                <p class="card-text textOneLine me-3">@item.Category!.Name</p>
+                                            }
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </td>
+                        </tr>
+
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script>
+        $(document).ready(function () {
+            datatable = $('table').DataTable({
+                "ordering": false
+            });
+        });
+    </script>
+}

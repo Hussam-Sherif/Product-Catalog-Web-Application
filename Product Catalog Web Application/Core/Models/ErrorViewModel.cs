@@ -1,4 +1,4 @@
-namespace Product_Catalog_Web_Application.Models
+namespace Product_Catalog_Web_Application.Core.Models
 {
     public class ErrorViewModel
     {
