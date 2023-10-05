@@ -72,6 +72,13 @@
         "plugins/scrollPlugin.js",
         "plugins/scrollPlugin.min.js"
       ]
+    },
+    {
+      "library": "bootbox.js@6.0.0",
+      "destination": "wwwroot/lib/bootbox.js/",
+      "files": [
+        "bootbox.min.js"
+      ]
     }
   ]
 }

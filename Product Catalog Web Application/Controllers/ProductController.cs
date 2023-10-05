@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using NToastNotify;
 using Product_Catalog_Web_Application.Core.Models;
 using Product_Catalog_Web_Application.Core.ViewModel;
 using Product_Catalog_Web_Application.Data;
@@ -10,10 +11,13 @@ namespace Product_Catalog_Web_Application.Controllers
     public class ProductController : Controller
     {
         private readonly ApplicationDbContext _Context;
+        private readonly IToastNotification _toast;
 
-        public ProductController(ApplicationDbContext context)
+        public ProductController(ApplicationDbContext context, 
+            IToastNotification toast)
         {
             _Context = context;
+            _toast = toast;
         }
         //public async Task<IActionResult> Index()
         //{
@@ -57,6 +61,7 @@ namespace Product_Catalog_Web_Application.Controllers
                 }).ToList()
                 //Categories = record
             };
+            
             return View("ProductForm", ViewModel);
         }
         [HttpPost]
@@ -64,7 +69,16 @@ namespace Product_Catalog_Web_Application.Controllers
         {
 
             if (!ModelState.IsValid)
-                return View("ProductForm",ViewModel);
+            {
+                var Category = await _Context.Categories.ToListAsync();
+                var CategoriesSelectListItem = Category.Select(SC => new SelectListItem
+                {
+                    Text = SC.Name,
+                    Value = SC.Id.ToString(),
+                }).ToList();
+
+                return View("ProductForm", ViewModel);
+            }
             var product = new Product()
             {
                 Name = ViewModel.Name,
@@ -79,7 +93,8 @@ namespace Product_Catalog_Web_Application.Controllers
        
             await _Context.AddAsync(product);
             _Context.SaveChanges();
-
+            _toast.AddSuccessToastMessage("Product Created Successfully !");
+            
 
             return RedirectToAction("Index", "Home");
         }
@@ -92,9 +107,8 @@ namespace Product_Catalog_Web_Application.Controllers
                 .FirstOrDefaultAsync(p => p.ID == id);
 
             if (product == null)
-            {
                 return NotFound();
-            }
+            
             var record = await _Context.Categories.ToListAsync();
            var CategoriesSelectListItem = record.Select(SC => new SelectListItem
             {
@@ -125,6 +139,7 @@ namespace Product_Catalog_Web_Application.Controllers
                     Text = SC.Name,
                     Value = SC.Id.ToString(),
                 }).ToList();
+
                 return View("ProductForm", viewModel);
             }
 
@@ -141,10 +156,31 @@ namespace Product_Catalog_Web_Application.Controllers
             foreach (var category in viewModel.SelectedCategoryIds)
                 record.Categories.Add(new ProductCategory { CategoryID = category });
             _Context.SaveChanges();
+            _toast.AddInfoToastMessage("Product Edited Successfully !");
             return RedirectToAction("Index", "Home");
 
         }
+        public async Task<IActionResult>Delete(int id)
+        {
+            if(!ModelState.IsValid)
+                return BadRequest();
+            var record = _Context.Products
+                .Include(pc => pc.Categories)
+                .ThenInclude(c => c.Category)
+                .FirstOrDefault(p => p.ID == id);
+            if(record is null)
+                return NotFound();
 
+            _Context.Products.Remove(record);
+            //_Context.SaveChanges();
+            return RedirectToAction("Index", "Home");
+        }
+        public IActionResult AllowItem(ProductFormViewModel model)
+        {
+            var record = _Context.Products.FirstOrDefault(x => x.Name == model.Name);
+            var IsAllowed = record is null || record.ID.Equals(model.ID);
+            return Json(IsAllowed);
+        }
     }
 }
 

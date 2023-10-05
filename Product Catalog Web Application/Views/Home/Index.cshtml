@@ -45,17 +45,17 @@
                 <tbody>
                     @foreach (var product in Model)
                     {
-                        <tr>
+                        <tr class="ParentClass">
                             <td>
                                 <div class="media">
-                                    
+
                                     <div class="media-body">
                                         <h5 class="mt-0">
                                             <a asp-controller="Product" asp-action="Details" asp-route-id="@product.ID">
                                                 @product.Name
                                             </a>
                                         </h5>
-                                        
+
                                         <div class="mb-2">
                                             <span class="badge bg-primary text-white">By: @product.Price</span>
                                             <span class="badge bg-success">@product.Price.ToString("C")</span>
@@ -91,7 +91,7 @@
                                         <h6 class="dropdown-header">Quick Actions</h6>
                                         <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" asp-controller="Product" asp-action="Edit" asp-route-id="@product.ID">Edit</a>
-                                        <a class="dropdown-item js-toggle-status" href="#" data-url="/Books/ToggleStatus/${row.id}">Toggle Status</a>
+                                        <a class="dropdown-item js-delete" href="javascript:;" data-id="@product.ID">Delete Product</a>
                                     </div>
                                 </div>
                             </td>
@@ -108,6 +108,39 @@
         $(document).ready(function () {
             $('table').DataTable({
                 "ordering": false
+            });
+
+            $('.js-delete').on('click', function () {
+                var btn = $(this);
+                console.log("Hello");
+                bootbox.confirm({
+                    message: 'This is a confirm with custom button text and color! Do you like it?',
+                    buttons: {
+                        confirm: {
+                            label: 'Yes',
+                            className: 'btn-danger'
+                        },
+                        cancel: {
+                            label: 'No',
+                            className: 'btn-success'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            $.ajax({
+                                url: '/Product/Delete/' + btn.data('id'),
+                                success: function () {
+                                    btn.parents('.ParentClass').fadeOut();
+                                    toastr.success('Movie Deleted successfully!');
+                                },
+                                error: function () {
+                                    toastr.error('Something Went Wrong!');
+                                },
+                            });
+                        }
+                    }
+                });
+
             });
         });
     </script>

@@ -1,6 +1,8 @@
+using Bookify.Web.Seeds;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using NToastNotify;
 using Product_Catalog_Web_Application.Data;
 using Product_Catalog_Web_Application.Seeds;
 using static System.Formats.Asn1.AsnWriter;
@@ -12,9 +14,16 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddMvc().AddNToastNotifyToastr(new ToastrOptions()
+{
+    ProgressBar = true,
+    PositionClass = ToastPositions.TopRight,
+    CloseButton = true,
+    PreventDuplicates = true,
+});
+builder.Services.AddIdentity<IdentityUser,IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultUI()
+    .AddDefaultTokenProviders(); 
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -35,8 +44,12 @@ else
 var scopefactory = app.Services.GetRequiredService<IServiceScopeFactory>();
 using var scope = scopefactory.CreateScope();
 var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+var rolemanger = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+var usermanger = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
 await DefaultCategory.SeedCategory(dbContext);
+await DefaultRoles.SeedRoles(rolemanger);
+await DefaultUsers.SeedAdminUser(usermanger);
 //
 app.UseHttpsRedirection();
 app.UseStaticFiles();

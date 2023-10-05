@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NToastNotify;
 using Product_Catalog_Web_Application.Core.Models;
 using Product_Catalog_Web_Application.Data;
 using System.Diagnostics;
@@ -12,16 +13,19 @@ namespace Product_Catalog_Web_Application.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IToastNotification _toast;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, UserManager<IdentityUser> userManager, IToastNotification toast)
         {
             _logger = logger;
             _context = context;
             _userManager = userManager;
+            _toast = toast;
         }
 
         public async Task<IActionResult> Index()
         {
+ 
             //var userID = _userManager.GetUserId(HttpContext.User);
             //if (userID == null)
             //{
