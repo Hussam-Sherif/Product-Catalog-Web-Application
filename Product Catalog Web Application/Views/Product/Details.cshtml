@@ -1,3 +1,38 @@
 ﻿@model ProductVM
+@{
+    ViewBag.Title = "Product Details";
+}
 
-<h1>@Model.Name</h1>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mt-5">
+                <div class="card-header">
+                    Featured
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">@Model.Name</h5>
+                    <p class="card-text">
+                        <strong>ID:</strong> @Model.ID<br />
+                        <strong>Duration:</strong> @Model.Duration<br />
+                        <strong>Start Date:</strong> @Model.StartDate.ToShortDateString()<br />
+                        <strong>Price:</strong> @Model.Price.ToString("C")<br />
+                        <strong>Categories:</strong>
+                        <ul>
+                            @foreach (var category in Model.Categories)
+                            {
+                                <li>@category</li>
+                            }
+                        </ul>
+                    </p>
+                    <a asp-action="Index" asp-controller="Home" class="btn btn-danger">Back To List</a>
+                    <a asp-action="Edit" asp-controller="Product" asp-route-id="@Model.ID" class="btn btn-primary">Edit Product</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <!-- Add any necessary scripts here -->
+}

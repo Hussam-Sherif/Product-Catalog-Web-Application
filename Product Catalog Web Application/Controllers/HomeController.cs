@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Product_Catalog_Web_Application.Core.Models;
 using Product_Catalog_Web_Application.Data;
@@ -10,21 +11,48 @@ namespace Product_Catalog_Web_Application.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _logger = logger;
             _context = context;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index()
         {
-            var record =await _context.Products
-                .Include(p=>p.Categories)
-                .ThenInclude(c=>c.Category)
-                .ToListAsync();
-            return View(record);
+            //var userID = _userManager.GetUserId(HttpContext.User);
+            //if (userID == null)
+            //{
+            //    var record = await _context.Products
+            //    .Where(p => p.StartDate <= DateTime.Now && p.StartDate.AddDays(p.Duration) >= DateTime.Now)
+            //    .Include(p => p.Categories)
+            //    .ThenInclude(c => c.Category)
+            //    .ToListAsync();
+            //    return View(record);
+            //}
+            //else
+            //{
+            //    var record = await _context.Products
+            //   .Include(p => p.Categories)
+            //   .ThenInclude(c => c.Category)
+            //   .ToListAsync();
+            //    return View(record);
+            //}
+
+            IQueryable<Product> record = _context.Products.Include(p => p.Categories)
+                .ThenInclude(c => c.Category);
+
+            if (User.IsInRole("Admin"))
+            {
+                record = record.Where(p => p.StartDate <= DateTime.Now && p.StartDate.AddDays(p.Duration) >= DateTime.Now);
+            }
+
+            var products = await record.ToListAsync();
+
+            return View(products);
+
         }
 
         public IActionResult Privacy()

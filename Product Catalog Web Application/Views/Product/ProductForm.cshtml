@@ -1,0 +1,89 @@
+﻿@model ProductFormViewModel
+@{
+    ViewData["Title"] = "Product Form";
+}
+<h1>@(Model.ID > 0 ? "Edit" : "Create") Product</h1>
+<hr />
+<section class="row justify-content-between">
+    <div class="col-md-4">
+        <form method="post" asp-action="@(Model.ID>0 ? "Edit" : "Create" )" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col">
+                    <div class="mb-2">
+                        <div class="form-group">
+                            <label class="text-muted" asp-for="Name">
+                            </label>
+                            <input type="hidden" asp-for="ID" />
+                            <input type="text" class="form-control" asp-for="Name" />
+                            <span role="alert" class="alert-danger" asp-validation-for="Name"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col">
+                    <div class="mb-3">
+                        <label class="text-muted" asp-for="SelectedCategoryIds">
+                        </label>
+                        <div class="form-floating mb-2">
+                            <select class="form-select form-select-solid js-select2" data-placeholder="Select a category"
+                                    asp-for="SelectedCategoryIds" asp-items="@Model.Categories">
+                                <option value="">Select a category</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <hr />
+            <div class=" form-group">
+                <label class="text-muted" asp-for="Price">
+                </label>
+                <input type="number" class="form-control" asp-for="Price" min="0"
+                       value="@Model.Price" />
+                <span role="alert" class="alert-danger" asp-validation-for="Price"></span>
+            </div>
+            <hr />
+            <div class=" form-group">
+                <label class="text-muted" asp-for="StartDate">
+                </label>
+                <input type="date" class="form-control js-flatpicker" asp-for="StartDate"/>
+                <span role="alert" class="alert-danger" asp-validation-for="StartDate"></span>
+            </div>
+            <hr />
+            <div class=" form-group">
+                <label class="text-muted" asp-for="Duration">
+                </label>
+                <input type="number" class="form-control" asp-for="Duration" min="0"
+                       value="@Model.Duration" />
+                <span role="alert" class="alert-danger" asp-validation-for="Duration"></span>
+            </div>
+            <hr />
+            <button type="submit" class="btn btn-info">
+                <i class="bi bi-check2-all">
+                    Save changes
+                </i>
+            </button>
+            <button class=" btn btn-dark" asp-controller="Home" asp-action="Index">
+                <i class="bi bi-x-circle"> Cancel </i>
+            </button>
+        </form>
+    </div>
+
+</section>
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $('.js-select2').select2();
+            $('.js-flatpicker').flatpickr({
+                minDate: "today",
+                maxDate: new Date().fp_incr(14)
+            }); 
+            $('.js-flatpicker2').flatpickr({
+                minDate: "today",
+            });
+        });
+    </script>
+
+}

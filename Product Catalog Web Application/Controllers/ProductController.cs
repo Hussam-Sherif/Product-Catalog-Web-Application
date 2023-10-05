@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Product_Catalog_Web_Application.Core.Models;
 using Product_Catalog_Web_Application.Core.ViewModel;
 using Product_Catalog_Web_Application.Data;
 
@@ -13,13 +15,23 @@ namespace Product_Catalog_Web_Application.Controllers
         {
             _Context = context;
         }
+        //public async Task<IActionResult> Index()
+        //{
+        //    var record = await _context.Products
+        //        .Where(p => p.StartDate <= DateTime.Now && p.StartDate.AddDays(p.Duration) >= DateTime.Now)
+        //        .Include(p => p.Categories)
+        //        .ThenInclude(c => c.Category)
+        //        .ToListAsync();
+
+        //    return View(record);
+        //}
 
         public async Task<IActionResult> Details(int id)
         {
             var record = await _Context.Products
-                .Include(p=>p.Categories)
-                .ThenInclude(c=>c.Category)
-                .FirstOrDefaultAsync(p=>p.ID== id);
+                .Include(p => p.Categories)
+                .ThenInclude(c => c.Category)
+                .FirstOrDefaultAsync(p => p.ID == id);
             var ViewModel = new ProductVM()
             {
                 ID = record.ID,
@@ -27,9 +39,112 @@ namespace Product_Catalog_Web_Application.Controllers
                 Duration = record.Duration,
                 StartDate = record.StartDate,
                 Price = record.Price,
-                Categories = record.Categories.Select(c => c.Category.Name).ToList()
+                Categories = record.Categories.Select(c => c.Category!.Name).ToList()
             };
             return View(ViewModel);
         }
+        [HttpGet]
+        public async Task<IActionResult> Create()
+        {
+            var record = await _Context.Categories.ToListAsync();
+            var ViewModel = new ProductFormViewModel()
+            {
+                StartDate= DateTime.Now,
+                Categories = record.Select(SC => new SelectListItem
+                {
+                    Text = SC.Name,
+                    Value = SC.Id.ToString(),
+                }).ToList()
+                //Categories = record
+            };
+            return View("ProductForm", ViewModel);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Create(ProductFormViewModel ViewModel)
+        {
+
+            if (!ModelState.IsValid)
+                return View("ProductForm",ViewModel);
+            var product = new Product()
+            {
+                Name = ViewModel.Name,
+                StartDate = ViewModel.StartDate,
+                Duration = ViewModel.Duration,
+                Price = ViewModel.Price,
+                CreationDate = DateTime.Now,
+            };
+             
+            foreach (var category in ViewModel.SelectedCategoryIds)
+                product.Categories.Add(new ProductCategory { CategoryID = category } );
+       
+            await _Context.AddAsync(product);
+            _Context.SaveChanges();
+
+
+            return RedirectToAction("Index", "Home");
+        }
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var product = await _Context.Products
+                .Include(p => p.Categories)
+                .ThenInclude(pc => pc.Category)
+                .FirstOrDefaultAsync(p => p.ID == id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+            var record = await _Context.Categories.ToListAsync();
+           var CategoriesSelectListItem = record.Select(SC => new SelectListItem
+            {
+                Text = SC.Name,
+                Value = SC.Id.ToString(),
+            }).ToList();
+            var viewModel = new ProductFormViewModel
+            {
+                ID = product.ID,
+                Name = product.Name,
+                Duration = product.Duration,
+                StartDate = product.StartDate,
+                Price = product.Price,
+                Categories = CategoriesSelectListItem,
+                SelectedCategoryIds = product.Categories.Select(pc => pc.CategoryID).ToList()
+            };
+
+            return View("ProductForm", viewModel);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Edit(ProductFormViewModel viewModel)
+        {
+            if(!ModelState.IsValid)
+            {
+                var Category = await _Context.Categories.ToListAsync();
+                var CategoriesSelectListItem = Category.Select(SC => new SelectListItem
+                {
+                    Text = SC.Name,
+                    Value = SC.Id.ToString(),
+                }).ToList();
+                return View("ProductForm", viewModel);
+            }
+
+           
+            var record =await _Context.Products.Include(pc=>pc.Categories).ThenInclude(c=>c.Category).FirstOrDefaultAsync(p=>p.ID== viewModel.ID);
+            if (record is null)
+                return NotFound();
+
+            record.Name = viewModel.Name;
+            record.Price = viewModel.Price;
+            record.StartDate = viewModel.StartDate;
+            record.Duration = viewModel.Duration;
+            record.Categories.Clear();
+            foreach (var category in viewModel.SelectedCategoryIds)
+                record.Categories.Add(new ProductCategory { CategoryID = category });
+            _Context.SaveChanges();
+            return RedirectToAction("Index", "Home");
+
+        }
+
     }
 }
+
