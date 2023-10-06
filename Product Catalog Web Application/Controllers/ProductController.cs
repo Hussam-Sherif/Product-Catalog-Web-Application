@@ -45,7 +45,13 @@ namespace Product_Catalog_Web_Application.Controllers
                 .Include(p => p.Categories)
                 .ThenInclude(c => c.Category)
                 .FirstOrDefaultAsync(p => p.ID == id);
-        
+
+
+            if (record.StartDate > DateTime.Now || record.StartDate.AddDays(record.Duration) < DateTime.Now)
+                if (!User.IsInRole(AppRoles.Admin))
+                    return Redirect("/Identity/Account/Login");
+
+
             var ViewModel = new ProductVM()
             {
                 ID = record.ID,
@@ -57,6 +63,7 @@ namespace Product_Catalog_Web_Application.Controllers
                             (await _Context.Users.FirstAsync(x=>x.Id == record.CreatedById)),
             Categories = record.Categories.Select(c => c.Category!.Name).ToList()
             };
+
             return View(ViewModel);
         }
         [HttpGet]

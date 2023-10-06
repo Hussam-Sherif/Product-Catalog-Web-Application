@@ -2,6 +2,12 @@
 @{
     ViewData["Title"] = "Product Form";
 }
+<style>
+    body {
+        background-image: url('/assets/images/bg6.jpg');
+    }
+
+</style>
 <h1>@(Model.ID > 0 ? "Edit" : "Create") Product</h1>
 <hr />
 <section class="row justify-content-between">
@@ -62,13 +68,11 @@
             </div>
             <hr />
             <button type="submit" class="btn btn-info">
-                <i class="bi bi-check2-all">
                     Save changes
-                </i>
             </button>
-            <button class=" btn btn-dark" asp-controller="Home" asp-action="Index">
-                <i class="bi bi-x-circle"> Cancel </i>
-            </button>
+            <a class="btn btn-dark" asp-controller="Home" asp-action="Index">
+                 Cancel 
+            </a>
         </form>
     </div>
 

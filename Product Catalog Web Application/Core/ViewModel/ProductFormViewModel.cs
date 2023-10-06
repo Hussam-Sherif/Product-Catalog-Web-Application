@@ -14,7 +14,9 @@ namespace Product_Catalog_Web_Application.Core.ViewModel
         [Remote("AllowItem", "Product", AdditionalFields = "ID", ErrorMessage = Errors.Duplicate)]
         [RegularExpression(RegexPatterns.CharactersOnly_Eng, ErrorMessage = Errors.OnlyEnglishLetters)]
         public string Name { get; set; } = null!;
+        [Display(Name = "Start date")]
         public DateTime StartDate { get; set; }
+        [Display(Name="Duration in day")]
         public int Duration { get; set; }
         public double Price { get; set; }
         public string? CreatedBy { get; set; }

@@ -15,8 +15,7 @@
             {
                 await userManager.CreateAsync(Admin, "Admin@123");
                await userManager.AddToRoleAsync(Admin, AppRoles.Admin);
-                //await userManager.AddToRoleAsync(Admin, AppRoles.Archive);
-               // await userManager.AddToRoleAsync(Admin, AppRoles.Reception);
+
 
             }
            
