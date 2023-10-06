@@ -21,4 +21,15 @@
     <PackageReference Include="NToastNotify" Version="8.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\assets\images\bg10-dark.jpeg">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\assets\images\bg10.jpeg">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

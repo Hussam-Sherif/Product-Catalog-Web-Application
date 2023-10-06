@@ -77,7 +77,23 @@
                             <td>
                                 <div class="mb-2">
                                     <strong>Start date at:</strong>
-                                    <span class="badge bg-primary text-white">@product.StartDate.ToString("MM/dd/yyyy")</span>
+
+                                    @{
+                                        if (@product.StartDate > DateTime.Now)
+                                        {
+                                            <span class="badge bg-warning text-white">@product.StartDate.ToString("MM/dd/yyyy")</span>
+                                        }
+                                        else if (@product.StartDate <= DateTime.Now && @product.StartDate.AddDays(@product.Duration) >= DateTime.Now)
+                                        {
+                                            <span class="badge bg-primary text-white">@product.StartDate.ToString("MM/dd/yyyy")</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger text-white">@product.StartDate.ToString("MM/dd/yyyy")</span>
+                                        }
+                                    }
+                                    
+                                    
                                 </div>
                             </td>
                             <td>
@@ -139,6 +155,8 @@
         $(document).ready(function () {
             var table = $('#table').DataTable({
                 "pagingType": "simple_numbers",
+                stateSave: true,
+                lengthMenu: [5,10, 15, 20, 25],
                 "language": {
                     "paginate": {
                         "previous": "&lt;", // Custom "Previous" button label
