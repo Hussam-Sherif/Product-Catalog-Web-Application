@@ -2,7 +2,12 @@
     ViewData["Title"] = "Welcome To Myproduct";
 }
 @model IEnumerable<Product>
+<style>
+    body {
+        background-image: url('/assets/images/bg6.jpg');
+    }
 
+</style>
 <div class="container-fluid py-5" style="background-color: #0a4275;">
     <div class="row align-items-center">
         <div class="col-md-6 text-center text-md-end mb-4 mb-md-0">
@@ -175,6 +180,7 @@
     <script>
         $(document).ready(function () {
             var dataTable = $('#table').DataTable({
+                searching: false,
                 "pagingType": "simple_numbers",
                 stateSave: true,
                 lengthMenu: [5, 10, 15, 20, 25],
@@ -185,12 +191,6 @@
                     }
                 }
             });
-
-            // Redraw the table to apply the custom pagination styling
-            dataTable.on('draw.dt', function () {
-                dataTable.$('.paginate_button').addClass('current');
-            });
-
             $('.js-delete').on('click', function () {
                 var btn = $(this);
                 console.log("Hello");
@@ -221,25 +221,25 @@
                         }
                     }
                 });
-
             });
-
+            // Redraw the table to apply the custom pagination styling
+            dataTable.on('draw.dt', function () {
+                dataTable.$('.paginate_button').addClass('current');
+            });
             $('#filter-form').submit(function (e) {
                 e.preventDefault();
                 filterProducts();
             });
-
             // Function to filter products based on category name
             function filterProducts() {
                 var categoryName = $('#categoryName').val();
                 console.log('CategoryName:', categoryName);
                 $.ajax({
-                    url: '/Product/Index?CategoryName=' + categoryName,
+                    url: '/Product/Index?CategoryName=' + categoryName, //
                     method: 'GET',
                     success: function (data) {
                         // Clear existing DataTable data
                         dataTable.clear();
-
                         // Add filtered data to DataTable
                         dataTable.rows.add(data).draw();
                     },
@@ -248,6 +248,7 @@
                     }
                 });
             }
+            
         });
 
     </script>
