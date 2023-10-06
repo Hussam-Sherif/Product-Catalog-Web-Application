@@ -1,24 +1,33 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Bookify.Web.Seeds;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using NToastNotify;
 using Product_Catalog_Web_Application.Core.Models;
 using Product_Catalog_Web_Application.Core.ViewModel;
 using Product_Catalog_Web_Application.Data;
+using Product_Catalog_Web_Application.Data.Migrations;
+using System.Data;
+using System.Security.Claims;
 
 namespace Product_Catalog_Web_Application.Controllers
 {
+
     public class ProductController : Controller
     {
         private readonly ApplicationDbContext _Context;
         private readonly IToastNotification _toast;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public ProductController(ApplicationDbContext context, 
-            IToastNotification toast)
+        public ProductController(ApplicationDbContext context,
+            IToastNotification toast,
+            UserManager<IdentityUser> userManager)
         {
             _Context = context;
             _toast = toast;
+            _userManager = userManager;
         }
+        
         //public async Task<IActionResult> Index()
         //{
         //    var record = await _context.Products
@@ -36,6 +45,7 @@ namespace Product_Catalog_Web_Application.Controllers
                 .Include(p => p.Categories)
                 .ThenInclude(c => c.Category)
                 .FirstOrDefaultAsync(p => p.ID == id);
+        
             var ViewModel = new ProductVM()
             {
                 ID = record.ID,
@@ -43,11 +53,14 @@ namespace Product_Catalog_Web_Application.Controllers
                 Duration = record.Duration,
                 StartDate = record.StartDate,
                 Price = record.Price,
-                Categories = record.Categories.Select(c => c.Category!.Name).ToList()
+                CreatedBy = await _userManager.GetUserNameAsync
+                            (await _Context.Users.FirstAsync(x=>x.Id == record.CreatedById)),
+            Categories = record.Categories.Select(c => c.Category!.Name).ToList()
             };
             return View(ViewModel);
         }
         [HttpGet]
+        [Authorize(Roles = AppRoles.Admin)]
         public async Task<IActionResult> Create()
         {
             var record = await _Context.Categories.ToListAsync();
@@ -65,6 +78,7 @@ namespace Product_Catalog_Web_Application.Controllers
             return View("ProductForm", ViewModel);
         }
         [HttpPost]
+        [Authorize(Roles = AppRoles.Admin)]
         public async Task<IActionResult> Create(ProductFormViewModel ViewModel)
         {
 
@@ -85,7 +99,8 @@ namespace Product_Catalog_Web_Application.Controllers
                 StartDate = ViewModel.StartDate,
                 Duration = ViewModel.Duration,
                 Price = ViewModel.Price,
-                CreationDate = DateTime.Now,
+                CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value,
+            CreationDate = DateTime.Now,
             };
              
             foreach (var category in ViewModel.SelectedCategoryIds)
@@ -99,6 +114,7 @@ namespace Product_Catalog_Web_Application.Controllers
             return RedirectToAction("Index", "Home");
         }
         [HttpGet]
+        [Authorize(Roles = AppRoles.Admin)]
         public async Task<IActionResult> Edit(int id)
         {
             var product = await _Context.Products
@@ -129,6 +145,7 @@ namespace Product_Catalog_Web_Application.Controllers
             return View("ProductForm", viewModel);
         }
         [HttpPost]
+        [Authorize(Roles = AppRoles.Admin)]
         public async Task<IActionResult> Edit(ProductFormViewModel viewModel)
         {
             if(!ModelState.IsValid)
@@ -160,6 +177,7 @@ namespace Product_Catalog_Web_Application.Controllers
             return RedirectToAction("Index", "Home");
 
         }
+        [Authorize(Roles = AppRoles.Admin)]
         public async Task<IActionResult>Delete(int id)
         {
             if(!ModelState.IsValid)
@@ -172,9 +190,10 @@ namespace Product_Catalog_Web_Application.Controllers
                 return NotFound();
 
             _Context.Products.Remove(record);
-            //_Context.SaveChanges();
+            _Context.SaveChanges();
             return RedirectToAction("Index", "Home");
         }
+
         public IActionResult AllowItem(ProductFormViewModel model)
         {
             var record = _Context.Products.FirstOrDefault(x => x.Name == model.Name);

@@ -25,7 +25,7 @@ namespace Product_Catalog_Web_Application.Controllers
 
         public async Task<IActionResult> Index()
         {
- 
+
             //var userID = _userManager.GetUserId(HttpContext.User);
             //if (userID == null)
             //{
@@ -45,15 +45,24 @@ namespace Product_Catalog_Web_Application.Controllers
             //    return View(record);
             //}
 
-            IQueryable<Product> record = _context.Products.Include(p => p.Categories)
+            IQueryable<Product> record = _context.Products
+                .Include(p => p.Categories)
                 .ThenInclude(c => c.Category);
+                
 
-            if (User.IsInRole("Admin"))
+
+            if (!User.IsInRole("Admin"))
             {
                 record = record.Where(p => p.StartDate <= DateTime.Now && p.StartDate.AddDays(p.Duration) >= DateTime.Now);
             }
 
             var products = await record.ToListAsync();
+
+            foreach (var item in products)
+            {
+                item.CreatedById = await _userManager.GetUserNameAsync
+                            (await _context.Users.FirstAsync(x => x.Id == item.CreatedById));
+            }
 
             return View(products);
 

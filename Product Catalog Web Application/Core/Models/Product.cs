@@ -10,7 +10,7 @@
         public double Price { get; set; }
         public ICollection<ProductCategory> Categories { get; set; } = new List<ProductCategory>();
 
-        //public string? CreatedById { get; set; }
-        //public ApplicationUser? CreatedBy { get; set; }
+        public string? CreatedById { get; set; }
+        public IdentityUser? CreatedBy { get; set; }
     }
 }

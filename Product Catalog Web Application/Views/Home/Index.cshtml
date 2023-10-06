@@ -39,6 +39,11 @@
                 <thead>
                     <tr>
                         <th>Product</th>
+                        <th>Created By</th>
+                        <th>Price</th>
+                        <th>Start date</th>
+                        <th>Duration</th>
+                        <th>Categories</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -48,31 +53,55 @@
                         <tr class="ParentClass">
                             <td>
                                 <div class="media">
-
                                     <div class="media-body">
                                         <h5 class="mt-0">
                                             <a asp-controller="Product" asp-action="Details" asp-route-id="@product.ID">
                                                 @product.Name
                                             </a>
                                         </h5>
-
-                                        <div class="mb-2">
-                                            <span class="badge bg-primary text-white">By: @product.Price</span>
-                                            <span class="badge bg-success">@product.Price.ToString("C")</span>
-                                        </div>
-                                        <p class="mb-0">
-                                            Categories:
-                                            @foreach (var item in product.Categories)
-                                            {
-                                                <span class="badge bg-info">@item.Category!.Name</span>
-                                            }
-                                        </p>
                                     </div>
                                 </div>
                             </td>
                             <td>
+                                <div class="d-flex align-items-center">
+                                    
+                                    <span class="badge bg-primary text-white">@product.CreatedById</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="mb-2">
+                                    <strong>Price is:</strong>
+                                    <span class="badge bg-primary text-white">@product.Price</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="mb-2">
+                                    <strong>Start date at:</strong>
+                                    <span class="badge bg-primary text-white">@product.StartDate.ToString("MM/dd/yyyy")</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="mb-2">
+                                    <strong>Duration will be:</strong>
+                                    <span class="badge bg-primary text-white">
+                                        @{
+                                            var endDate = product.StartDate.AddDays(product.Duration);
+                                        }
+                                        @endDate.ToString("MM/dd/yyyy")
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <p class="mb-0">
+                                    @foreach (var item in product.Categories)
+                                    {
+                                        <span class="badge bg-info">@item.Category!.Name</span><br />
+                                    }
+                                </p>
+                            </td>
+                            <td>
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-primary">
+                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <span class="svg-icon svg-icon-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24">
                                                 <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -84,10 +113,7 @@
                                             </svg>
                                         </span>
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <span class="visually-hidden">Toggle Dropdown</span>
-                                    </button>
-                                    <div class="dropdown-menu">
+                                    <div class="dropdown-menu dropdown-menu-end">
                                         <h6 class="dropdown-header">Quick Actions</h6>
                                         <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" asp-controller="Product" asp-action="Edit" asp-route-id="@product.ID">Edit</a>
@@ -96,6 +122,10 @@
                                 </div>
                             </td>
                         </tr>
+
+
+
+
                     }
                 </tbody>
             </table>
@@ -107,7 +137,8 @@
     <script>
         $(document).ready(function () {
             $('table').DataTable({
-                "ordering": false
+                "ordering": true,
+
             });
 
             $('.js-delete').on('click', function () {

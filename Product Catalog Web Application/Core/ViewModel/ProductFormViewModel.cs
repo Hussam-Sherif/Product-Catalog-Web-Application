@@ -17,6 +17,7 @@ namespace Product_Catalog_Web_Application.Core.ViewModel
         public DateTime StartDate { get; set; }
         public int Duration { get; set; }
         public double Price { get; set; }
+        public string? CreatedBy { get; set; }
         public IEnumerable<SelectListItem>? Categories { get; set; }
         public List<int> SelectedCategoryIds { get; set; } = null!;
 

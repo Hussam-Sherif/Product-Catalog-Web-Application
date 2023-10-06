@@ -3,35 +3,52 @@
     ViewBag.Title = "Product Details";
 }
 
-<div class="container">
+<div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card mt-5">
-                <div class="card-header">
-                    Featured
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2>@Model.Name</h2>
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">@Model.Name</h5>
-                    <p class="card-text">
-                        <strong>ID:</strong> @Model.ID<br />
-                        <strong>Duration:</strong> @Model.Duration<br />
-                        <strong>Start Date:</strong> @Model.StartDate.ToShortDateString()<br />
-                        <strong>Price:</strong> @Model.Price.ToString("C")<br />
-                        <strong>Categories:</strong>
-                        <ul>
-                            @foreach (var category in Model.Categories)
-                            {
-                                <li>@category</li>
+                    <dl class="row">
+                        <dt class="col-sm-3">ID:</dt>
+                        <dd class="col-sm-9">@Model.ID</dd>
+                        <dt class="col-sm-3">Duration:</dt>
+                        <dd class="col-sm-9">@Model.Duration</dd>
+                        <dt class="col-sm-3">Created By:</dt>
+                        <dd class="col-sm-9">@Model.CreatedBy</dd>
+                        <dt class="col-sm-3">Start Date:</dt>
+                        <dd class="col-sm-9">@Model.StartDate.ToShortDateString()</dd>
+                        <dt class="col-sm-3">Duration will be:</dt>
+                        <dd class="col-sm-9">
+                            @{
+                                var endDate = Model.StartDate.AddDays(Model.Duration);
                             }
-                        </ul>
-                    </p>
-                    <a asp-action="Index" asp-controller="Home" class="btn btn-danger">Back To List</a>
-                    <a asp-action="Edit" asp-controller="Product" asp-route-id="@Model.ID" class="btn btn-primary">Edit Product</a>
+                            @endDate.ToString("MM/dd/yyyy")
+                        </dd>
+                        <dt class="col-sm-3">Price:</dt>
+                        <dd class="col-sm-9">@Model.Price.ToString("C")</dd>
+                        <dt class="col-sm-3">Categories:</dt>
+                        <dd class="col-sm-9">
+                            <ul>
+                                @foreach (var category in Model.Categories)
+                                {
+                                    <li>@category</li>
+                                }
+                            </ul>
+                        </dd>
+                    </dl>
+                    <div class="text-center">
+                        <a asp-action="Index" asp-controller="Home" class="btn btn-danger">Back To List</a>
+                        <a asp-action="Edit" asp-controller="Product" asp-route-id="@Model.ID" class="btn btn-primary">Edit Product</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 
 @section scripts {
     <!-- Add any necessary scripts here -->
