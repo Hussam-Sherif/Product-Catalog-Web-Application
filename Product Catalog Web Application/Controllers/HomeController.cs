@@ -23,7 +23,7 @@ namespace Product_Catalog_Web_Application.Controllers
             _toast = toast;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? CategoryName)
         {
 
             //var userID = _userManager.GetUserId(HttpContext.User);
@@ -48,8 +48,11 @@ namespace Product_Catalog_Web_Application.Controllers
             IQueryable<Product> record = _context.Products
                 .Include(p => p.Categories)
                 .ThenInclude(c => c.Category);
-                
 
+            if (!string.IsNullOrWhiteSpace(CategoryName))
+            {
+                record = record.Where(p => p.Categories.Any(pc => pc.Category.Name == CategoryName));
+            }
 
             if (!User.IsInRole("Admin"))
             {
