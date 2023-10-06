@@ -35,7 +35,7 @@
 <div class="container mt-4">
     <div class="card shadow">
         <div class="card-body">
-            <table class="table table-hover">
+            <table class="table table-hover" id="table" cellspacing="0" width="100%">
                 <thead>
                     <tr>
                         <th>Product</th>
@@ -128,6 +128,7 @@
 
                     }
                 </tbody>
+                
             </table>
         </div>
     </div>
@@ -136,9 +137,19 @@
 @section Scripts{
     <script>
         $(document).ready(function () {
-            $('table').DataTable({
-                "ordering": true,
+            var table = $('#table').DataTable({
+                "pagingType": "simple_numbers",
+                "language": {
+                    "paginate": {
+                        "previous": "&lt;", // Custom "Previous" button label
+                        "next": "&gt;" // Custom "Next" button label
+                    }
+                }
+            });
 
+            // Redraw the table to apply the custom pagination styling
+            table.on('draw.dt', function () {
+                table.$('.paginate_button').addClass('current');
             });
 
             $('.js-delete').on('click', function () {
