@@ -20,11 +20,7 @@ html {
 body {
     /*  margin-bottom: 60px;*/
 }
-tfoot input {
-    width: 100%;
-    padding: 3px;
-    box-sizing: border-box;
-}
+
 /* Style for the pagination container */
 .dataTables_wrapper .dataTables_paginate {
     display: flex;

@@ -12,37 +12,67 @@
                 </div>
                 <div class="card-body">
                     <dl class="row">
-                        <dt class="col-sm-3">ID:</dt>
-                        <dd class="col-sm-9">@Model.ID</dd>
-                        <dt class="col-sm-3">Duration:</dt>
-                        <dd class="col-sm-9">@Model.Duration</dd>
+                       
+
                         <dt class="col-sm-3">Created By:</dt>
-                        <dd class="col-sm-9">@Model.CreatedBy</dd>
+                        <dd class="col-sm-9" style="font-size: 24px; color: #007bff; font-weight: bold;">
+                            @Model.CreatedBy
+                        </dd>
+                        <hr />
                         <dt class="col-sm-3">Start Date:</dt>
-                        <dd class="col-sm-9">@Model.StartDate.ToShortDateString()</dd>
-                        <dt class="col-sm-3">Duration will be:</dt>
                         <dd class="col-sm-9">
                             @{
-                                var endDate = Model.StartDate.AddDays(Model.Duration);
+                                if (@Model.StartDate > DateTime.Now)
+                                {
+                                    <span class="badge bg-warning text-white">@Model.StartDate.ToString("MM/dd/yyyy")</span>
+                                }
+                                else if (@Model.StartDate <= DateTime.Now && @Model.StartDate.AddDays(@Model.Duration) >= DateTime.Now)
+                                {
+                                    <span class="badge bg-primary text-white">@Model.StartDate.ToString("MM/dd/yyyy")</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger text-white">@Model.StartDate.ToString("MM/dd/yyyy")</span>
+                                }
                             }
-                            @endDate.ToString("MM/dd/yyyy")
                         </dd>
+                        <hr />
+                        <dt class="col-sm-3">Duration will be:</dt>
+                        <dd class="col-sm-9">
+                            <span class="badge bg-primary text-white">
+                                @{
+                                    var endDate = @Model.StartDate.AddDays(@Model.Duration);
+                                }
+                                @endDate.ToString("MM/dd/yyyy")
+                            </span>
+                        </dd>
+                        <hr />
                         <dt class="col-sm-3">Price:</dt>
-                        <dd class="col-sm-9">@Model.Price.ToString("C")</dd>
+                        <dd class="col-sm-9" style="font-size: 24px; color: #007bff; font-weight: bold;">
+                            @Model.Price.ToString("C")
+                        </dd>
+                        <hr />
                         <dt class="col-sm-3">Categories:</dt>
                         <dd class="col-sm-9">
                             <ul>
                                 @foreach (var category in Model.Categories)
                                 {
-                                    <li>@category</li>
+                                    <span class="badge bg-info">@category</span><br />
                                 }
                             </ul>
                         </dd>
+                        <hr />
                     </dl>
-                    <div class="text-center">
-                        <a asp-action="Index" asp-controller="Home" class="btn btn-danger">Back To List</a>
-                        <a asp-action="Edit" asp-controller="Product" asp-route-id="@Model.ID" class="btn btn-primary">Edit Product</a>
-                    </div>
+                    @{
+                        if (User.IsInRole("Admin"))
+                        {
+                            <div class="text-center">
+                                <a asp-action="Index" asp-controller="Home" class="btn btn-danger">Back To List</a>
+                                <a asp-action="Edit" asp-controller="Product" asp-route-id="@Model.ID" class="btn btn-primary">Edit Product</a>
+                            </div>
+                        }
+                    }
+                   
                 </div>
             </div>
         </div>

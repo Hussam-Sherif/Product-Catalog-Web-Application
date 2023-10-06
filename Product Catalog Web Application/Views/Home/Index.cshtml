@@ -234,10 +234,8 @@
                 var categoryName = $('#categoryName').val();
                 console.log('CategoryName:', categoryName);
                 $.ajax({
-                    url: '/Product/Index?CategoryName=' + categoryName, //
-                    console.log(url);
+                    url: '/Product/Index?CategoryName=' + categoryName,
                     method: 'GET',
-
                     success: function (data) {
                         // Clear existing DataTable data
                         dataTable.clear();
@@ -251,5 +249,6 @@
                 });
             }
         });
+
     </script>
 }
